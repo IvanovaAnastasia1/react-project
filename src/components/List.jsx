@@ -1,27 +1,36 @@
+/* eslint-disable */
 import React from 'react';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
 import Form from './Form';
 
 class List extends React.Component {
   constructor() {
     super();
-    this.state = { todos: [] };
+    this.state = { todos: [], category: [] };
     this.handleClick = this.handleClick.bind(this);
     this.toggle = this.toggle.bind(this);
     this.deleteItem = this.deleteItem.bind(this);
   }
 
-  handleClick(event, value) {
+  componentDidMount() {
+    axios.get('http://localhost:3001/list').then((res) => this.setState({ todos: res.data }));
+  }
+
+  handleClick(event, value, select) {
     event.preventDefault();
-    this.setState((state) => ({
-      todos: [
-        ...state.todos,
-        {
-          id: state.todos.length + 1,
-          status: false,
-          text: value,
-        },
-      ],
-    }));
+    const { todos } = this.state;
+
+    axios
+      .post('http://localhost:3001/list', {
+        id: Math.random(),
+        status: false,
+        text: value,
+        category: select,
+      })
+      .then((result) =>
+        axios.get('http://localhost:3001/list').then((res) => this.setState({ todos: res.data })),
+      );
   }
 
   toggle(itemId) {
@@ -45,7 +54,7 @@ class List extends React.Component {
   create(todo) {
     return (
       <li key={todo.id}>
-        <span>{todo.text}</span>
+        <span>{todo.text}</span> <span>{`[${todo.category}]`}</span>
         <input type="checkbox" checked={todo.status} onChange={() => this.toggle(todo.id)} />
         <button type="button" onClick={(e) => this.deleteItem(e, todo.id)}>
           Удалить
@@ -60,6 +69,8 @@ class List extends React.Component {
     const todoList = todos.map(this.create.bind(this));
     return (
       <div>
+         <Link to='/'>Список дел    </Link>
+         <Link to='/addcategory'>    Категории</Link>
         <Form onKeyDown={this.handleClick} />
         <ul>{todoList}</ul>
       </div>
