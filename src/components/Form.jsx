@@ -1,7 +1,8 @@
 import React from 'react';
 import axios from 'axios';
+import { Button, Form, Container } from 'react-bootstrap';
 
-class Form extends React.Component {
+class FormComp extends React.Component {
   constructor() {
     super();
     this.state = { inputValue: '', category: [], select: '' };
@@ -25,20 +26,38 @@ class Form extends React.Component {
     const { onKeyDown } = this.props;
 
     return (
-      <form>
-        <input type="text" value={inputValue} onChange={this.onChange} />
-        <select onChange={(e) => this.setState({ select: e.target.value })}>
-          <option disabled>Выберите категорию</option>
-          {category.map((el) => (
-            <option key={el.id} value={el.text} label={el.text} />
-          ))}
-        </select>
-        <button type="button" onClick={(e) => onKeyDown(e, inputValue, select)}>
-          Добавить дело
-        </button>
-      </form>
+      <Container fluid="sm">
+        <Form size="md">
+          <Form.Row>
+            <Form.Label>Запланировать</Form.Label>
+            <Form.Control value={inputValue} onChange={this.onChange} type="text" />
+            <br />
+            <br />
+            <Form.Label>Категория</Form.Label>
+            <Form.Control
+              as="select"
+              onChange={(e) => this.setState({ select: e.target.value })}
+              defaultValue="DEFAULT"
+            >
+              <option value="DEFAULT" disabled>
+                Choose category
+              </option>
+              {category.map((el) => (
+                <option key={el.id} value={el.text} label={el.text} />
+              ))}
+            </Form.Control>
+            <br />
+            <br />
+            <Button type="button" onClick={(e) => onKeyDown(e, inputValue, select)}>
+              Запланировать
+            </Button>
+          </Form.Row>
+          <br />
+          <br />
+        </Form>
+      </Container>
     );
   }
 }
 
-export default Form;
+export default FormComp;
