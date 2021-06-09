@@ -1,18 +1,19 @@
 import React from 'react';
 import axios from 'axios';
 import { Button, Form, Container } from 'react-bootstrap';
+import { connect } from 'react-redux';
 
 class FormComp extends React.Component {
   constructor() {
     super();
-    this.state = { inputValue: '', category: [], select: '' };
+    this.state = { inputValue: '', select: '' };
     this.onChange = this.onChange.bind(this);
   }
 
   componentDidMount() {
-    axios
-      .get('http://localhost:3001/category')
-      .then((res) => this.setState({ category: res.data }));
+    const { getCategory } = this.props;
+
+    axios.get('http://localhost:3001/category').then((res) => getCategory(res.data));
   }
 
   onChange(event) {
@@ -22,7 +23,8 @@ class FormComp extends React.Component {
   }
 
   render() {
-    const { inputValue, category, select } = this.state;
+    const { inputValue, select } = this.state;
+    const { category } = this.props;
     const { onKeyDown } = this.props;
 
     return (
@@ -60,4 +62,11 @@ class FormComp extends React.Component {
   }
 }
 
-export default FormComp;
+const mapStateToProps = (state) => ({ todos: state.todos, category: state.category });
+
+const mapDispatchToProps = (dispatch) => ({
+  getCategory: (payload) => dispatch({ type: 'GET_CATEGORY', payload }),
+  addCategory: (payload) => dispatch({ type: 'ADD_CATEGORY', payload }),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(FormComp);

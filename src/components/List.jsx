@@ -1,6 +1,8 @@
 /* eslint-disable */
 import React from 'react';
 import axios from 'axios';
+import { connect } from 'react-redux';
+
 import { Navbar, Nav, Table, Container, Button } from 'react-bootstrap';
 
 import Form from './Form';
@@ -8,20 +10,20 @@ import Form from './Form';
 class List extends React.Component {
   constructor() {
     super();
-    this.state = { todos: [], category: [] };
+    this.state = { category: [] };
     this.handleClick = this.handleClick.bind(this);
     this.toggle = this.toggle.bind(this);
     this.deleteItem = this.deleteItem.bind(this);
   }
 
   componentDidMount() {
-    axios.get('http://localhost:3001/list').then((res) => this.setState({ todos: res.data }));
+    axios.get('http://localhost:3001/list').then((res) => {
+      this.props.getTodo(res.data);
+    });
   }
 
   handleClick(event, value, select) {
     event.preventDefault();
-    const { todos } = this.state;
-
     axios
       .post('http://localhost:3001/list', {
         id: Math.random(),
@@ -30,26 +32,31 @@ class List extends React.Component {
         category: select,
       })
       .then((result) =>
-        axios.get('http://localhost:3001/list').then((res) => this.setState({ todos: res.data })),
+        axios.get('http://localhost:3001/list').then((res) => {
+          this.props.getTodo(res.data);
+        }),
       );
   }
 
   toggle(itemId) {
-    const { todos } = this.state;
+    const { todos } = this.props;
     const list = todos.map((item) => {
       const toggleStat = item.id === itemId ? !item.status : item.status;
 
       return { ...item, status: toggleStat };
     });
-    this.setState({ todos: list });
+    this.props.getTodo(list);
+
   }
 
   deleteItem(event, id) {
-    const { todos } = this.state;
+    const { todos } = this.props;
 
     event.preventDefault();
     const arr = todos.filter((item) => item.id !== id);
+    this.props.getTodo(arr);
     this.setState({ todos: arr });
+    this.props.getTodo(arr);
   }
 
   create(todo) {
@@ -65,9 +72,8 @@ class List extends React.Component {
   }
 
   render() {
-    const { todos } = this.state;
+    const { todos } = this.props;
 
-    const todoList = todos.map(this.create.bind(this));
     return (
       <div>
         <Navbar bg="light" expand="lg" className="justify-content-between">
@@ -112,7 +118,7 @@ class List extends React.Component {
                   <td>
                     {' '}
                     <Button type="button" onClick={(e) => this.deleteItem(e, item.id)}>
-                    Удалить
+                      Удалить
                     </Button>
                   </td>
                 </tr>
@@ -125,4 +131,16 @@ class List extends React.Component {
   }
 }
 
-export default List;
+const mapStateToProps = (state) => ({ todos: state.todos, category: state.category });
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getTodo: (payload) => dispatch({ type: 'GET_TODO', payload }),
+    addTodo: (payload) => dispatch({ type: 'ADD_TODO', payload }),
+    getCategory: (payload) => dispatch({ type: 'GET_CATEGORY', payload}),
+    addCategory: (payload) => dispatch({ type: 'ADD_CATEGORY', payload }),
+  };
+};
+
+// export default List;
+export default connect(mapStateToProps, mapDispatchToProps)(List);

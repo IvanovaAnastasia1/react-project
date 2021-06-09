@@ -2,6 +2,7 @@
 import React from 'react';
 import axios from 'axios';
 import { Navbar, Nav, Button, Table, Container, Modal, Form, Col } from 'react-bootstrap';
+import { connect } from 'react-redux';
 
 class Category extends React.Component {
   constructor() {
@@ -18,9 +19,11 @@ class Category extends React.Component {
   }
 
   componentDidMount() {
+    const { getCategory } = this.props;
+
     axios
       .get('http://localhost:3001/category')
-      .then((res) => this.setState({ category: res.data }));
+      .then((res) => getCategory(res.data));
   }
 
   openModal() {
@@ -37,7 +40,8 @@ class Category extends React.Component {
 
   onKeyDown(event, value) {
     event.preventDefault();
-    const { category, inputValue } = this.state;
+    const { inputValue } = this.state;
+    const { getCategory, category } = this.props;
 
     const exist = category.find((el) => el.text === inputValue);
 
@@ -57,7 +61,7 @@ class Category extends React.Component {
         axios
           .get('http://localhost:3001/category')
           .then((res) => {
-            this.setState({ category: res.data })
+            getCategory(res.data)
             this.setState({ open: false })
           }),
       );
@@ -70,7 +74,8 @@ class Category extends React.Component {
   }
 
   render() {
-    const { category, inputValue, valid, open } = this.state;
+    const { inputValue, valid, open } = this.state;
+    const { category } = this.props;
 
     return (
       <div>
@@ -142,4 +147,13 @@ class Category extends React.Component {
   }
 }
 
-export default Category;
+const mapStateToProps = (state) => ({ todos: state.todos, category: state.category });
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getCategory: (payload) => dispatch({ type: 'GET_CATEGORY', payload }),
+    addCategory: (payload) => dispatch({ type: 'ADD_CATEGORY', payload }),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Category);
