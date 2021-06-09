@@ -13,7 +13,9 @@ class FormComp extends React.Component {
   componentDidMount() {
     const { getCategory } = this.props;
 
-    axios.get('http://localhost:3001/category').then((res) => getCategory(res.data));
+    axios
+      .get('https://react-project-server-ivanova.herokuapp.com/category')
+      .then((res) => getCategory(res.data));
   }
 
   onChange(event) {

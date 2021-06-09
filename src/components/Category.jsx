@@ -22,7 +22,7 @@ class Category extends React.Component {
     const { getCategory } = this.props;
 
     axios
-      .get('http://localhost:3001/category')
+      .get('https://react-project-server-ivanova.herokuapp.com/category')
       .then((res) => getCategory(res.data));
   }
 
@@ -53,13 +53,13 @@ class Category extends React.Component {
       return;
     }
     axios
-      .post('http://localhost:3001/category', {
+      .post('https://react-project-server-ivanova.herokuapp.com/category', {
         id: Math.random(),
         text: value,
       })
       .then((result) =>
         axios
-          .get('http://localhost:3001/category')
+          .get('https://react-project-server-ivanova.herokuapp.com/category')
           .then((res) => {
             getCategory(res.data)
             this.setState({ open: false })

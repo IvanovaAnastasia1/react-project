@@ -17,7 +17,7 @@ class List extends React.Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:3001/list').then((res) => {
+    axios.get('https://react-project-server-ivanova.herokuapp.com/list').then((res) => {
       this.props.getTodo(res.data);
     });
   }
@@ -25,14 +25,14 @@ class List extends React.Component {
   handleClick(event, value, select) {
     event.preventDefault();
     axios
-      .post('http://localhost:3001/list', {
+      .post('https://react-project-server-ivanova.herokuapp.com/list', {
         id: Math.random(),
         status: false,
         text: value,
         category: select,
       })
       .then((result) =>
-        axios.get('http://localhost:3001/list').then((res) => {
+        axios.get('https://react-project-server-ivanova.herokuapp.com/list').then((res) => {
           this.props.getTodo(res.data);
         }),
       );
@@ -46,7 +46,6 @@ class List extends React.Component {
       return { ...item, status: toggleStat };
     });
     this.props.getTodo(list);
-
   }
 
   deleteItem(event, id) {
@@ -137,7 +136,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getTodo: (payload) => dispatch({ type: 'GET_TODO', payload }),
     addTodo: (payload) => dispatch({ type: 'ADD_TODO', payload }),
-    getCategory: (payload) => dispatch({ type: 'GET_CATEGORY', payload}),
+    getCategory: (payload) => dispatch({ type: 'GET_CATEGORY', payload }),
     addCategory: (payload) => dispatch({ type: 'ADD_CATEGORY', payload }),
   };
 };
